@@ -1,0 +1,29 @@
+steps:
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    args:
+      - >-
+        --destination=us.gcr.io/$PROJECT_ID/ic-upload-service:$_ENV
+      - '--context=dir:///workspace'
+      - '--cache=true'
+      - '--dockerfile=Dockerfile'
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    args:
+      - run
+      - deploy
+      - $_ENV-cloud-upload-server
+      - '--image'
+      - us.gcr.io/$PROJECT_ID/ic-upload-service:$_ENV
+      - '--region'
+      - us-central1
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - --set-env-vars
+      - ENV=$_ENV, DATASTORE_PROJECT_ID=$PROJECT_ID, BACKEND_URL=$_BACKEND_URL
+    entrypoint: gcloud
+timeout: 1200s
+options:
+  logging: CLOUD_LOGGING_ONLY
+  pool:
+    name: >-
+      projects/$PROJECT_ID/locations/us-central1/workerPools/us-central1--e2-highcpu-32

@@ -1,0 +1,11 @@
+server:
+  port: 0.0.0.0:8080
+  enable-path-param: true
+  datastore-namespace: "UPLOAD-SERVICE"
+
+BACKEND_URL: "https://incorta-cloud-server-upload-service-clouddev-vncvkzqu7a-uc.a.run.app"
+ENV: "CLOUDDEV"
+DATASTORE_PROJECT_ID: incorta-cloud-staging
+CREDS_LOCATION: CLOUD
+SERVICE_ACCOUNT: upload-server-service-account@incorta-cloud-staging.iam.gserviceaccount.com
+CREDS_FILE: /Users/mario/Projects/cloud/cloud-upload-service/cloud-upload-service/incorta-cloud-staging-upload-service.json

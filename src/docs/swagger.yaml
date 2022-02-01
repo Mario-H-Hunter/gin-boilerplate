@@ -1,0 +1,510 @@
+basePath: /api/v1
+definitions:
+  forms.StartUpload:
+    properties:
+      cluster_id:
+        type: string
+      created_at:
+        type: string
+      md5_hash:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      size:
+        type: integer
+      tenant:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - cluster_id
+    - md5_hash
+    - name
+    - size
+    - tenant
+    type: object
+  forms.SyncStorage:
+    properties:
+      cluster_id:
+        type: string
+      conflict_resolution_type:
+        type: integer
+      local_objects:
+        items:
+          $ref: '#/definitions/forms.StartUpload'
+        type: array
+      storage_directory:
+        type: string
+      tenant:
+        type: string
+    required:
+    - cluster_id
+    - conflict_resolution_type
+    - local_objects
+    - tenant
+    type: object
+  forms.UserSignInRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.DownloadMetadata:
+    properties:
+      created_at:
+        type: string
+      download_url:
+        type: string
+      md5_hash:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      size:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.HttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload: {}
+    type: object
+  models.Instance:
+    properties:
+      cname:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      prefix:
+        type: string
+      updated_at:
+        type: integer
+      userID:
+        type: string
+    type: object
+  models.InstanceInfo:
+    properties:
+      instance:
+        $ref: '#/definitions/models.Instance'
+      userPermission:
+        type: string
+    type: object
+  models.MarkAsCompleteHttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload:
+        type: string
+    type: object
+  models.StorageObject:
+    properties:
+      content_type:
+        type: string
+      created_at:
+        type: string
+      md5_hash:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      size:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.SyncStorageHttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload:
+        $ref: '#/definitions/models.SyncStorageResponsePayload'
+    type: object
+  models.SyncStorageResponsePayload:
+    properties:
+      to_be_downloaded:
+        items:
+          $ref: '#/definitions/models.DownloadMetadata'
+        type: array
+      to_be_uploaded:
+        items:
+          $ref: '#/definitions/models.UploadMetadata'
+        type: array
+    type: object
+  models.Tenant:
+    properties:
+      name:
+        type: string
+    type: object
+  models.TenantDataHttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload:
+        items:
+          $ref: '#/definitions/models.StorageObject'
+        type: array
+    type: object
+  models.UploadMetadata:
+    properties:
+      cluster_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: string
+      md5_hash:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      provider_spec_id:
+        type: integer
+      size:
+        type: integer
+      status_id:
+        type: integer
+      tenant:
+        type: string
+      updated_at:
+        type: string
+      upload_url:
+        type: string
+    type: object
+  models.UploadMetadataHttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload:
+        $ref: '#/definitions/models.UploadMetadata'
+    type: object
+  models.User:
+    properties:
+      company:
+        type: string
+      confirmed:
+        type: boolean
+      cost_center:
+        type: string
+      credit:
+        type: integer
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: string
+      invitedAccount:
+        type: boolean
+      jobTitle:
+        type: string
+      lastLoginAt:
+        type: string
+      optInLocation:
+        type: string
+      organization:
+        type: string
+      phone:
+        type: string
+      trialExpiration:
+        type: string
+    type: object
+  models.UserInstancesHttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload:
+        items:
+          $ref: '#/definitions/models.InstanceInfo'
+        type: array
+    type: object
+  models.UserSignInHttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload:
+        $ref: '#/definitions/models.UserSignInResponse'
+    type: object
+  models.UserSignInResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+    required:
+    - token
+    - user
+    type: object
+  models.UserTenantsHttpResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      payload:
+        items:
+          $ref: '#/definitions/models.Tenant'
+        type: array
+    type: object
+info:
+  contact:
+    name: Incorta Cloud
+    url: http://cloud.incorta.com
+  description: Upload service to handle uploads to incorta cloud storage
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Incorta Cloud Upload Service
+  version: "1.1"
+paths:
+  /storage/sync:
+    post:
+      consumes:
+      - application/json
+      operationId: SyncStorage
+      parameters:
+      - description: Sync Objects Local & Cloud
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/forms.SyncStorage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.SyncStorageHttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Syncs Two versions of Object Storage, the local and the cloud version.
+        It uses fully qualified names as keys, md5 hashes to determine divergence
+      tags:
+      - Storage
+  /uploads/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: GetByID
+      parameters:
+      - description: Upload id to get
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.UploadMetadataHttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Upload by its id
+      tags:
+      - Upload
+  /uploads/{id}/complete:
+    get:
+      consumes:
+      - application/json
+      operationId: MarkAsComplete
+      parameters:
+      - description: Upload id to mark as complete
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.MarkAsCompleteHttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Mark Upload as complete
+      tags:
+      - Upload
+  /uploads/initiate:
+    post:
+      consumes:
+      - application/json
+      operationId: Initiate
+      parameters:
+      - description: Start Upload Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/forms.StartUpload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.UploadMetadataHttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Initiates a new file upload using file metadata and returns self-signed
+        url
+      tags:
+      - Upload
+  /user/instances:
+    get:
+      consumes:
+      - application/json
+      description: Get all user instances from Cloud BE
+      operationId: GetInstances
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.UserInstancesHttpResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all user instances
+      tags:
+      - User
+  /user/instances/{instanceName}:
+    get:
+      consumes:
+      - application/json
+      operationId: GetTenantData
+      parameters:
+      - description: Instance name to fetch its tenant
+        in: path
+        name: instanceName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.TenantDataHttpResponse'
+        "400":
+          description: Bad Request, no tenants found in this instance name
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all user tenant data files uploaded to GCP
+      tags:
+      - User
+  /user/instances/{instanceName}/tenants:
+    get:
+      consumes:
+      - application/json
+      operationId: GetInstanceTenants
+      parameters:
+      - description: Instance name to fetch its tenant
+        in: path
+        name: instanceName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.UserTenantsHttpResponse'
+        "400":
+          description: Bad Request, no tenants found in this instance name
+          schema:
+            $ref: '#/definitions/models.HttpResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all user tenants in this instance
+      tags:
+      - User
+  /user/signin:
+    post:
+      consumes:
+      - application/json
+      description: Sign in to the service By delegating the request to the cloud BE
+      operationId: SignIn
+      parameters:
+      - description: User data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/forms.UserSignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.UserSignInHttpResponse'
+      summary: Sign in to the upload service API
+      tags:
+      - User
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-Api-Token
+    type: apiKey
+swagger: "2.0"

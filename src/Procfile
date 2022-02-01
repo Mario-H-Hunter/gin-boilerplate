@@ -1,0 +1,1 @@
+web: ./incorta-cloud/upload-service -e development
